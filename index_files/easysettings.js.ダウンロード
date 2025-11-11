@@ -1,0 +1,114 @@
+class EasySettings {
+  constructor(...args) {
+    this.init(...args);
+  }
+
+  init() {
+    this.items = [
+
+{
+  key: "songSelectingSpeed",
+  title: () => strings.songSelectingSpeed,
+  info: "曲選択速度を入力してね！\n0 = 高速\n400 = 初期値\n800 = ゆっくり\n変えすぎると固まります注意してください。",
+  empty: 400,
+  reload: true,
+},
+{
+  key: "baisoku",
+  title: () => "⭐︎" + strings.baisoku,
+  info: "ばいそく(HS)の倍率を入力してね！\n2 = ばいそく\n3 = さいばい\n4 = よんばい\n1ではない場合、スコアは保存されません。",
+  empty: 1,
+  reload: false,
+},
+{
+  key: "doron",
+  title: () => "⭐︎" + strings.doron,
+  info: "ドロンを有効にするには\"1\"を入力してね！\n0または空文字でリセットできます！",
+  empty: 0,
+  reload: false,
+},
+{
+  key: "abekobe",
+  title: () => "⭐︎" + strings.abekobe,
+  info: "あべこべを有効にするには\"1\"を入力してね！\n0または空文字でリセットできます！",
+  empty: 0,
+  reload: false,
+},
+{
+  key: "detarame",
+  title: () => "⭐︎" + strings.detarame,
+  info: "でたらめになる確率をパーセントで入力してね！(0〜100)\n20 = きまぐれ\n50 = でたらめ",
+  empty: 0,
+  reload: false,
+},
+{
+  key: "titleSort",
+  title: () => strings.titlesort,
+  info: "タイトル順で並べ替えするには\"1\"を入力してね！\n0か空文字でリセットできます。",
+  empty: 0,
+  reload: true,
+},
+
+];
+  }
+
+  asSongItems(skin) {
+    return this.items.map((item) => {
+      return {
+        title: item.title(),
+        skin,
+        action: item.key,
+      };
+    });
+  }
+
+  keys() {
+    return this.items.map((i) => i.key);
+  }
+
+  first(key) {
+    return this.items.find((i) => i.key === key);
+  }
+
+  get(key) {
+    const keyLower = key.toLowerCase();
+    const value =  window.localStorage.getItem(keyLower);
+    return value !== null ? parseFloat(value, 10) : this.first(key).empty;
+  }
+
+  set(key, value) {
+    const keyLower = key.toLowerCase();
+    window.localStorage.setItem(keyLower, value.toString());
+  }
+
+  launchEditor(key) {
+    if (!window.confirm(`${this.first(key).title()} を編集しようとしています🌲`)) {
+      return;
+    }
+
+    const from = this.get(key).toString();
+
+    var to = window.prompt(this.first(key).info, from);
+
+    if (to === null) {
+      // キャンセル
+      return;
+    } else if (to === "") {
+      // 空文字でリセット
+      to = this.first(key).empty.toString();
+    }
+
+    if (from === to) {
+      // 変更なし
+      return;
+    }
+
+    this.set(key, to);
+    window.alert("正常に変更できました✨");
+
+    if (this.first(key).reload) {
+      window.alert("設定を反映するためにリロードを開始します。");
+      window.location.reload();
+    }
+  }
+}
